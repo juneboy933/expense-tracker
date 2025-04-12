@@ -15,6 +15,7 @@ const Budget = () => {
     const [filteredCategory, setFilteredCategory] = useState('All');
     const [monthlyBudget, setMonthlyBudget] = useState('');
     const [date, setDate] = useState('');
+    const [sortOrder, setSortOrder] = useState('newest');
 
     const toggleDarkMode = () => {
         setDarkMode((prevMode) => !prevMode);
@@ -108,6 +109,40 @@ const Budget = () => {
     const filteredExpenses = filteredCategory === 'All' ? expenses :
     expenses.filter((expense) => expense.expenseCategory === filteredCategory);
 
+    const sortedExpenses = [...filteredExpenses].sort((a,b) =>{
+        const dateA = new Date(a.date);
+        const dateB = new date(b.date);
+
+        return sortOrder === 'newest'
+        ? dateB - dateA
+        : dateA - dateB;
+    })
+
+    const exportToCSV = () => {
+        const headers = ['Title', 'Amount', 'Category', 'Date'];
+        const rows = expenses.map(exp => [
+            exp.expenseName,
+            exp.expenseAmount,
+            exp.expenseCategory,
+            new Date(exp.date).toLocaleDateString()
+        ]);
+
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], {type: 'text/csv'});
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'expense.csv';
+        a.click();
+
+        URL.revokeObjectURL(url); // clean up
+    }
+
   return (
     <div className= {darkMode ? 'app dark' : 'app'}>
         <h2>Budget Breakdown</h2>
@@ -165,6 +200,11 @@ const Budget = () => {
             <option value="Utilities">Utilities</option>
         </select>
 
+        <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+        </select>
+
         <div className="summary">
             <h3>TOTAL & BALANCE</h3>
             <p>
@@ -184,7 +224,7 @@ const Budget = () => {
         {expenses.length === 0 ? (
             <p>No expenses added yet</p>
         ) :
-        filteredExpenses.map((expense) => (
+        sortedExpenses.map((expense) => (
            <div key={expense.id} className="expense-item">
             <p>{expense.expenseName}</p>
             <p>{expense.expenseAmount}</p>
@@ -227,6 +267,9 @@ const Budget = () => {
                 ⚠️ Warning: You've exceeded your monthly budget!
             </p>
         )}
+        <button onClick={exportToCSV}>
+            Export Expenses to CSV
+        </button>
     </div>
   )
 }
