@@ -106,9 +106,7 @@ const Budget = () => {
     }
 
     const totalExpense = expenses.reduce((sum,exp) => sum + exp.expenseAmount,0);
-    const balance = income - totalExpense;
-    const budgetCap = parseFloat(monthlyBudget);
-    const percentageSpent = budgetCap > 0 ? (totalExpense / budgetCap) * 100 : 0;
+    const balance = (income - totalExpense || 0);
 
     const filteredExpenses = filteredCategory === 'All' ? expenses :
     expenses.filter((expense) => expense.expenseCategory === filteredCategory);
