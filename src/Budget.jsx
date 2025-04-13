@@ -223,7 +223,7 @@ const Budget = () => {
                     Total Expenses: Ksh. {totalExpense}
                 </p>
                 <p>
-                    Balance:{' '}
+                    Balance:{''}
                     <span className= {balance >= 0 ? 'balance-positive' : 'balance-negative'}>
                         Ksh. {balance}
                     </span> 
