@@ -110,8 +110,9 @@
 }
 
 .expense-item {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
   background: #fff;
   padding: 1rem;
   margin-bottom: 1rem;

@@ -236,10 +236,10 @@ const Budget = () => {
         ) :
         sortedExpenses.map((expense) => (
            <div key={expense.id} className="expense-item">
-            <p>{expense.expenseName}</p>
-            <p>{expense.expenseAmount}</p>
-            <p>{expense.expenseCategory}</p>
-            <p>{new Date(expense.date).toLocaleDateString()}</p>
+            <p>Name: {expense.expenseName}</p>
+            <p>Ksh.{expense.expenseAmount}</p>
+            <p>Category: {expense.expenseCategory}</p>
+            <p>Date: {new Date(expense.date).toLocaleDateString()}</p>
             <button className='btn btn-secondary' onClick={() => handleEdit(expense)}>Edit</button>
             <button className=' btn btn-danger' onClick={()=> deleteExpense(expense.id)}>Delete</button>
            </div>
