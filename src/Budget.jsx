@@ -38,6 +38,10 @@ const Budget = () => {
     },[darkMode]);
 
     useEffect(() => {
+        document.body.className = darkMode ? 'darkmode' : '';
+    },[darkMode]);
+
+    useEffect(() => {
         const savedData = JSON.parse(localStorage.getItem('budgetPlan'));
         if(savedData) {
             setIncome(savedData.income);
@@ -111,7 +115,7 @@ const Budget = () => {
 
     const sortedExpenses = [...filteredExpenses].sort((a,b) =>{
         const dateA = new Date(a.date);
-        const dateB = new date(b.date);
+        const dateB = new Date(b.date);
 
         return sortOrder === 'newest'
         ? dateB - dateA
@@ -144,12 +148,16 @@ const Budget = () => {
     }
 
   return (
-    <div className= {darkMode ? 'app dark' : 'app'}>
-        <h2>Budget Breakdown</h2>
+    <div className= {`app-container ${darkMode ? 'darkmode' : ''}`}>
+        <div className="app-header">
+        <h1>Budget Buddy</h1>
         <button
+            className='btn'
             onClick={toggleDarkMode}>
             {darkMode ? 'Light Mode' : 'Dark Mode'}
         </button>
+        </div>
+
         <form className="inputFields" onSubmit={handleSubmit}>
             <input 
                 type="number"
@@ -185,40 +193,42 @@ const Budget = () => {
                 onChange={(e) => setDate(e.target.value)}
                 required />
             <button
+                className='btn btn-primary'
                 type='submit'>
                     {isEditing ? "Update Expense" : "Add Expense"}
                 </button>
+                <select 
+                    value={filteredCategory}
+                    onChange={(e) => setFilteredCategory(e.target.value)}>
+                    <option value="All">All</option>
+                    <option value="Food">Food</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Utilities">Utilities</option>
+                </select>
+
+                <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                </select>
         </form>
 
-        <select 
-            value={filteredCategory}
-            onChange={(e) => setFilteredCategory(e.target.value)}>
-            <option value="All">All</option>
-            <option value="Food">Food</option>
-            <option value="Transport">Transport</option>
-            <option value="Entertainment">Entertainment</option>
-            <option value="Utilities">Utilities</option>
-        </select>
-
-        <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-        </select>
 
         <div className="summary">
-            <h3>TOTAL & BALANCE</h3>
-            <p>
-                Total income: Ksh.{income || 0}
-            </p>
-            <p>
-                Total Expenses: Ksh. {totalExpense}
-            </p>
-            <p>
-                Balance:{' '}
-                <span className= {balance >= 0 ? 'balance-positive' : 'balance-negative'}>
-                    Ksh. {balance}
-                </span> 
-            </p>
+            <div className="summary-item">
+                <p>
+                    Total income: Ksh.{income || 0}
+                </p>
+                <p>
+                    Total Expenses: Ksh. {totalExpense}
+                </p>
+                <p>
+                    Balance:{' '}
+                    <span className= {balance >= 0 ? 'balance-positive' : 'balance-negative'}>
+                        Ksh. {balance}
+                    </span> 
+                </p>
+            </div>
         </div>
         
         {expenses.length === 0 ? (
@@ -230,8 +240,8 @@ const Budget = () => {
             <p>{expense.expenseAmount}</p>
             <p>{expense.expenseCategory}</p>
             <p>{new Date(expense.date).toLocaleDateString()}</p>
-            <button onClick={() => handleEdit(expense)}>Edit</button>
-            <button onClick={()=> deleteExpense(expense.id)}>Delete</button>
+            <button className='btn btn-secondary' onClick={() => handleEdit(expense)}>Edit</button>
+            <button className=' btn btn-danger' onClick={()=> deleteExpense(expense.id)}>Delete</button>
            </div>
         ))}
 
@@ -245,29 +255,8 @@ const Budget = () => {
             </p>
         </div>
 
-        <div className={`progress-bar-container ${darkMode ? 'dark' : 'light'}`}>
-            <div className="progress-labels">
-                <span>Spent: Ksh{totalExpense}</span>
-                <span>Budget: Ksh{monthlyBudget}</span>
-            </div>
-            <div className="progress-bar">
-                <div className={`progress ${percentageSpent > 100 ? 'over-budget' : ''}`} style={{
-                    width: `${Math.min(percentageSpent, 100)}%`,
-                    backgroundColor: percentageSpent > 100 ? 'red' : '#4caf50'
-                }}></div>
-            </div>
-        </div>
-        {percentageSpent > 100 && (
-            <p style={{
-                color: '#e53935',
-                fontWeight: 'bold',
-                marginTop: '10px',
-                textAlign: 'center'
-            }}>
-                ⚠️ Warning: You've exceeded your monthly budget!
-            </p>
-        )}
-        <button onClick={exportToCSV}>
+   
+        <button className='csv-btn' onClick={exportToCSV}>
             Export Expenses to CSV
         </button>
     </div>
